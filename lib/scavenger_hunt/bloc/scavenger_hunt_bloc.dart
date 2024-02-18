@@ -30,7 +30,7 @@ class ScavengerHuntBloc extends Bloc<ScavengerHuntEvent, ScavengerHuntState> {
       final items = await repository.loadHunt(location);
 
       emit(state.copyWith(status: ScavengerHuntStatus.success, items: items));
-    } on Exception {
+    } on ScavengerHuntRepositoryException {
       emit(state.copyWith(status: ScavengerHuntStatus.failure));
     }
   }
