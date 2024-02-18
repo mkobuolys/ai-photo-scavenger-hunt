@@ -30,8 +30,9 @@ class ItemValidationFailureView extends StatelessWidget {
           const SkipItemButton(),
           const SizedBox(width: 8),
           FilledButton(
-            onPressed: () =>
-                context.read<ItemHuntBloc>().add(const ItemHuntReset()),
+            onPressed: () => context
+                .read<ItemHuntBloc>()
+                .add(const ItemHuntReset(resetTimer: false)),
             child: const Text('Try again'),
           ),
         ],

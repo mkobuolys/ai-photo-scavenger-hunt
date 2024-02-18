@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scavenger_hunt_repository/scavenger_hunt_repository.dart';
@@ -19,6 +21,15 @@ class ItemHuntBloc extends Bloc<ItemHuntEvent, ItemHuntState> {
   final PhotoPicker photoPicker;
   final ScavengerHuntRepository repository;
 
+  final _stopwatch = Stopwatch();
+
+  @override
+  Future<void> close() async {
+    _stopwatch.stop();
+
+    super.close();
+  }
+
   Future<void> _onItemFound(
     ItemHuntItemFound event,
     Emitter<ItemHuntState> emit,
@@ -28,13 +39,20 @@ class ItemHuntBloc extends Bloc<ItemHuntEvent, ItemHuntState> {
     try {
       final image = await photoPicker.takePhoto();
 
+      _stopwatch.stop();
+
       final itemFound = await repository.validateImage(event.item, image);
 
-      final updatedState = itemFound
-          ? state.copyWith(status: ItemHuntStatus.validationSuccess, score: 100)
-          : state.copyWith(status: ItemHuntStatus.validationFailure);
+      if (!itemFound) {
+        return emit(state.copyWith(status: ItemHuntStatus.validationFailure));
+      }
 
-      emit(updatedState);
+      final scorePenalty = _stopwatch.elapsedMilliseconds ~/ 5000 * 5;
+      final score = 100 - math.min<int>(scorePenalty, 50);
+
+      emit(
+        state.copyWith(status: ItemHuntStatus.validationSuccess, score: score),
+      );
     } on PhotoPickerException {
       emit(state.copyWith(status: ItemHuntStatus.validationFailure));
     } on ScavengerHuntRepositoryException {
@@ -43,6 +61,10 @@ class ItemHuntBloc extends Bloc<ItemHuntEvent, ItemHuntState> {
   }
 
   void _onReset(ItemHuntReset event, Emitter<ItemHuntState> emit) {
+    if (event.resetTimer) _stopwatch.reset();
+
+    _stopwatch.start();
+
     emit(const ItemHuntState());
   }
 }

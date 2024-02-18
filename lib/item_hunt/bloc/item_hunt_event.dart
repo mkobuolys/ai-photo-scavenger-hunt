@@ -17,5 +17,12 @@ final class ItemHuntItemFound extends ItemHuntEvent {
 }
 
 final class ItemHuntReset extends ItemHuntEvent {
-  const ItemHuntReset();
+  const ItemHuntReset({
+    this.resetTimer = true,
+  });
+
+  final bool resetTimer;
+
+  @override
+  List<Object> get props => [resetTimer];
 }

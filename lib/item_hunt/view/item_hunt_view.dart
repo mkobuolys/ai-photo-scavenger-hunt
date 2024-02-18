@@ -18,7 +18,7 @@ class ItemHuntView extends StatelessWidget {
       create: (context) => ItemHuntBloc(
         photoPicker: context.read<PhotoPicker>(),
         repository: context.read<ScavengerHuntRepository>(),
-      ),
+      )..add(const ItemHuntReset()),
       child: const _View(),
     );
   }
