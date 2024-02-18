@@ -44,7 +44,25 @@ class ScavengerHuntRepository {
   }
 
   Future<bool> validateImage(String item, Uint8List image) async {
-    return true;
+    try {
+      final response = await _client.validateImage(item, image);
+
+      if (response == null) {
+        throw const ScavengerHuntRepositoryException('Response is empty');
+      }
+
+      if (jsonDecode(response) case {'valid': bool valid}) return valid;
+
+      throw const ScavengerHuntRepositoryException('Invalid JSON schema');
+    } on GenerativeAIException {
+      throw const ScavengerHuntRepositoryException(
+        'Problem with the Generative AI service',
+      );
+    } catch (e) {
+      if (e is ScavengerHuntRepositoryException) rethrow;
+
+      throw const ScavengerHuntRepositoryException();
+    }
   }
 }
 

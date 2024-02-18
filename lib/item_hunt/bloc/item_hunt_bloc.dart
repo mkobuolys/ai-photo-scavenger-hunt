@@ -37,6 +37,8 @@ class ItemHuntBloc extends Bloc<ItemHuntEvent, ItemHuntState> {
       emit(updatedState);
     } on PhotoPickerException {
       emit(state.copyWith(status: ItemHuntStatus.validationFailure));
+    } on ScavengerHuntRepositoryException {
+      emit(state.copyWith(status: ItemHuntStatus.validationFailure));
     }
   }
 

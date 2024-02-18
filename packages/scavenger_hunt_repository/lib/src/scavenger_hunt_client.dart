@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:http/http.dart';
 
@@ -30,6 +32,21 @@ class ScavengerHuntClient {
         'Do not return your result as Markdown.';
 
     final response = await _model.generateContent([Content.text(prompt)]);
+
+    return response.text;
+  }
+
+  Future<String?> validateImage(String item, Uint8List image) async {
+    final prompt =
+        'You are a scavenger hunt game where objects are found by taking a photo of them.'
+        'You have been given the item "$item" and a photo of the item.'
+        'Determine if the photo is a valid photo of the item.'
+        'Provide your response as a JSON object with the following schema: {"valid": true/false}'
+        'Do not return your result as Markdown.';
+
+    final response = await _model.generateContent([
+      Content.multi([TextPart(prompt), DataPart('image/jpeg', image)]),
+    ]);
 
     return response.text;
   }
