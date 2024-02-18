@@ -1,0 +1,1 @@
+enum GameLocation { home, outside }

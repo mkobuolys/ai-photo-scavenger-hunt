@@ -1,0 +1,17 @@
+name: scavenger_hunt_repository
+description: "A repository for scavenger hunt data and image validation using Google AI Dart SDK."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_generative_ai: ^0.2.0
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+
+flutter:
