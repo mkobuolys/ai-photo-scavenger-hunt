@@ -9,17 +9,21 @@ class PhotoPicker {
 
   final ImagePicker imagePicker;
 
-  Future<Uint8List?> takePhoto() async {
+  Future<Uint8List> takePhoto() async {
     try {
       final photo = await imagePicker.pickImage(source: ImageSource.camera);
 
-      if (photo == null) return null;
+      if (photo == null) throw const PhotoPickerException();
 
       final bytes = await photo.readAsBytes();
 
       return bytes;
-    } catch (_) {
-      return null;
+    } on Exception {
+      throw const PhotoPickerException();
     }
   }
+}
+
+class PhotoPickerException implements Exception {
+  const PhotoPickerException();
 }
