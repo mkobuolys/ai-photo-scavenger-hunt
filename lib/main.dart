@@ -11,11 +11,18 @@ void main() {
 
   final photoPicker = PhotoPicker(imagePicker: ImagePicker());
 
-  final client = ScavengerHuntClient.vertexAi(
-    apiKey: const String.fromEnvironment('API_KEY'),
-    projectUrl: const String.fromEnvironment('VERTEX_AI_PROJECT_URL'),
-  );
-  final repository = ScavengerHuntRepository(client: client);
+  late final ScavengerHuntRepository repository;
+
+  if (const bool.fromEnvironment('USE_FAKE_DATA', defaultValue: false)) {
+    repository = const FakeScavengerHuntRepository();
+  } else {
+    final client = ScavengerHuntClient.vertexAi(
+      apiKey: const String.fromEnvironment('API_KEY'),
+      projectUrl: const String.fromEnvironment('VERTEX_AI_PROJECT_URL'),
+    );
+
+    repository = ScavengerHuntRepository(client: client);
+  }
 
   runApp(App(photoPicker: photoPicker, repository: repository));
 }
