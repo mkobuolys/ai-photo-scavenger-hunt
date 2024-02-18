@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class ViewLayout extends StatelessWidget {
   const ViewLayout({
     required this.content,
-    required this.action,
+    this.header,
+    this.footer,
     super.key,
   });
 
   final Widget content;
-  final Widget action;
+  final Widget? header;
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +18,9 @@ class ViewLayout extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          if (header != null) ...[header!, const SizedBox(height: 32)],
           Expanded(child: content),
-          const SizedBox(height: 32),
-          action,
+          if (footer != null) ...[const SizedBox(height: 32), footer!],
         ],
       ),
     );
