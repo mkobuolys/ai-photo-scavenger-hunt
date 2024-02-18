@@ -10,7 +10,12 @@ void main() {
   Bloc.observer = const _AppBlocObserver();
 
   final photoPicker = PhotoPicker(imagePicker: ImagePicker());
-  const repository = FakeScavengerHuntRepository();
+
+  final client = ScavengerHuntClient.vertexAi(
+    apiKey: const String.fromEnvironment('API_KEY'),
+    projectUrl: const String.fromEnvironment('VERTEX_AI_PROJECT_URL'),
+  );
+  final repository = ScavengerHuntRepository(client: client);
 
   runApp(App(photoPicker: photoPicker, repository: repository));
 }
