@@ -16,10 +16,12 @@ void main() {
   if (const bool.fromEnvironment('USE_FAKE_DATA', defaultValue: false)) {
     repository = const FakeScavengerHuntRepository();
   } else {
-    final client = ScavengerHuntClient.vertexAi(
-      apiKey: const String.fromEnvironment('API_KEY'),
-      projectUrl: const String.fromEnvironment('VERTEX_AI_PROJECT_URL'),
-    );
+    const apiKey = String.fromEnvironment('API_KEY');
+    const projectUrl = String.fromEnvironment('VERTEX_AI_PROJECT_URL');
+
+    final client = projectUrl.isEmpty
+        ? ScavengerHuntClient(apiKey: apiKey)
+        : ScavengerHuntClient.vertexAi(apiKey: apiKey, projectUrl: projectUrl);
 
     repository = ScavengerHuntRepository(client: client);
   }
