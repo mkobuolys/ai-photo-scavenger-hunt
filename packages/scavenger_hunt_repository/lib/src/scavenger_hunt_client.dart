@@ -28,7 +28,7 @@ class ScavengerHuntClient {
         'Generate a list of 5 items that could be found in the following location: $location.'
         'The difficulty to find the items should be easy, but some items could be a little bit more difficult to find.'
         'Keep the item name concise. All letters should be uppercase. Do not include articles (a, an, the).'
-        'Provide your response as a JSON object with the following schema: {"items": ["", "", ...]}"'
+        'Provide your response as a JSON object with the following schema: {"items": ["", "", ...]}.'
         'Do not return your result as Markdown.';
 
     final response = await _model.generateContent([Content.text(prompt)]);
@@ -41,7 +41,7 @@ class ScavengerHuntClient {
         'You are a scavenger hunt game where objects are found by taking a photo of them.'
         'You have been given the item "$item" and a photo of the item.'
         'Determine if the photo is a valid photo of the item.'
-        'Provide your response as a JSON object with the following schema: {"valid": true/false}'
+        'Provide your response as a JSON object with the following schema: {"valid": true/false}.'
         'Do not return your result as Markdown.';
 
     final response = await _model.generateContent([
