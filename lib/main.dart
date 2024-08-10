@@ -1,27 +1,35 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scavenger_hunt_repository/scavenger_hunt_repository.dart';
 
 import 'app/app.dart';
+import 'firebase_options.dart';
 import 'photo/photo_picker.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   Bloc.observer = const _AppBlocObserver();
 
   final photoPicker = PhotoPicker(imagePicker: ImagePicker());
 
   late final ScavengerHuntRepository repository;
 
-  if (const bool.fromEnvironment('USE_FAKE_DATA', defaultValue: false)) {
+  const useFakeData = bool.fromEnvironment(
+    'USE_FAKE_DATA',
+    defaultValue: false,
+  );
+
+  if (useFakeData) {
     repository = const FakeScavengerHuntRepository();
   } else {
-    const apiKey = String.fromEnvironment('API_KEY');
-    const projectUrl = String.fromEnvironment('VERTEX_AI_PROJECT_URL');
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-    final client = projectUrl.isEmpty
-        ? ScavengerHuntClient(apiKey: apiKey)
-        : ScavengerHuntClient.vertexAi(apiKey: apiKey, projectUrl: projectUrl);
+    final client = ScavengerHuntClient();
 
     repository = ScavengerHuntRepository(client: client);
   }

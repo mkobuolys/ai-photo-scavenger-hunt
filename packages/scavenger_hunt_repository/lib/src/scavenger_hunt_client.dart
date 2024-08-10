@@ -1,23 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:http/http.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 class ScavengerHuntClient {
-  ScavengerHuntClient({
-    required String apiKey,
-  }) : _model = GenerativeModel(
+  ScavengerHuntClient()
+      : _model = FirebaseVertexAI.instance.generativeModel(
           model: 'gemini-pro-vision',
-          apiKey: apiKey,
-        );
-
-  ScavengerHuntClient.vertexAi({
-    required String apiKey,
-    required String projectUrl,
-  }) : _model = GenerativeModel(
-          model: 'gemini-pro-vision',
-          apiKey: apiKey,
-          httpClient: VertexHttpClient(projectUrl),
         );
 
   final GenerativeModel _model;
@@ -37,7 +25,7 @@ class ScavengerHuntClient {
   }
 
   Future<String?> validateImage(String item, Uint8List image) async {
-    final prompt =
+    final promptText =
         'You are a scavenger hunt game where objects are found by taking a photo of them.'
         'You have been given the item "$item" and a photo of the item.'
         'Determine if the photo is a valid photo of the item.'
@@ -45,47 +33,9 @@ class ScavengerHuntClient {
         'Do not return your result as Markdown.';
 
     final response = await _model.generateContent([
-      Content.multi([TextPart(prompt), DataPart('image/jpeg', image)]),
+      Content.multi([TextPart(promptText), DataPart('image/jpeg', image)]),
     ]);
 
     return response.text;
-  }
-}
-
-// This class is borrowed from here:
-// https://github.com/leancodepl/arb_translate/blob/main/lib/src/translation_delegates/gemini_translation_delegate.dart#L233
-class VertexHttpClient extends BaseClient {
-  VertexHttpClient(this._projectUrl);
-
-  final String _projectUrl;
-  final _client = Client();
-
-  @override
-  Future<StreamedResponse> send(BaseRequest request) {
-    if (request is! Request ||
-        request.url.host != 'generativelanguage.googleapis.com') {
-      return _client.send(request);
-    }
-
-    final vertexRequest = Request(
-      request.method,
-      Uri.parse(
-        request.url.toString().replaceAll(
-              'https://generativelanguage.googleapis.com/v1/models',
-              _projectUrl,
-            ),
-      ),
-    )..bodyBytes = request.bodyBytes;
-
-    for (final header in request.headers.entries) {
-      if (header.key != 'x-goog-api-key') {
-        vertexRequest.headers[header.key] = header.value;
-      }
-    }
-
-    vertexRequest.headers['Authorization'] =
-        'Bearer ${request.headers['x-goog-api-key']}';
-
-    return _client.send(vertexRequest);
   }
 }
